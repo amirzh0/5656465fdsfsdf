@@ -6,10 +6,33 @@
 </head>
 <body>
   <h2>آپلود فایل</h2>
-  <form action="upload.php" method="post" enctype="multipart/form-data">
-    <input type="file" name="fileToUpload">
+
+  <form action="" method="post" enctype="multipart/form-data">
+    <input type="file" name="fileToUpload" required>
     <input type="submit" value="آپلود">
   </form>
+
+  <?php
+  if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['fileToUpload'])) {
+      $filename = basename($_FILES["fileToUpload"]["name"]);
+      $target_file = __DIR__ . "/" . $filename;
+
+      if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+          echo "<p style='color:green;'>✅ فایل با موفقیت آپلود شد: " . htmlspecialchars($filename) . "</p>";
+
+          $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+          $file_url = $filename;
+
+          // نمایش فایل بر اساس نوع
+          if (in_array($file_ext, ['jpg', 'jpeg', 'png', 'gif'])) {
+              echo "<img src='$file_url' alt='آپلود شده' style='max-width:300px; margin-top:10px;'>";
+          } else {
+              echo "<p><a href='$file_url' target='_blank'>📄 مشاهده یا دانلود فایل</a></p>";
+          }
+      } else {
+          echo "<p style='color:red;'>❌ خطا در آپلود فایل.</p>";
+      }
+  }
+  ?>
 </body>
 </html>
-
